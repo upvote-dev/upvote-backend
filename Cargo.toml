@@ -1,0 +1,18 @@
+[package]
+name = "upvote-backend"
+version = "0.0.1"
+edition = "2021"
+license = "Apache-2.0 OR MIT"
+
+[dependencies]
+actix-web = "^4"
+actix-web-httpauth = "0.8.2"
+derive_more = { version = "^1", features = ["display", "error", "from", "from_str"] }
+diesel = { version = "^2.2", features = ["postgres", "chrono", "r2d2", "serde_json"] }
+diesel_migrations = { version = "2.2.0", features = ["postgres"] }
+#rust-actix-diesel-auth-scaffold = { path = "../rust-actix-diesel-auth-scaffold" }
+rust-actix-diesel-auth-scaffold = { git = "https://github.com/offscale/rust-actix-diesel-auth-scaffold", version = "0.0.1" }
+serde = { version = "1.0.213", features = ["derive"] }
+serde_json = "1.0.132"
+chrono = "0.4.38"
+log = "0.4.22"

@@ -1,0 +1,24 @@
+version: '2'
+services:
+  valkey:
+    image: valkey/valkey:alpine3.20
+  postgres:
+    image: postgres:alpine3.20
+    environment:
+      POSTGRES_USER: rest_api_user
+      POSTGRES_PASSWORD: rest_api_pass
+      POSTGRES_DB: rest_api_db
+  api:
+    build:
+      context: .
+      dockerfile: debian.Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - valkey
+    environment:
+      DATABASE_URL: postgres://rest_api_user:rest_api_pass@postgres/rest_api_db
+      REDIS_URL: redis://valkey:6379
+      RUST_BACKTRACE: full
+    entrypoint: [ "/usr/local/cargo/bin/cargo", "test" ]
