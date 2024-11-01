@@ -4,7 +4,7 @@ use rust_actix_diesel_auth_scaffold::DbPool;
 
 use crate::models::review::{NewReview, NewReviewJ, Review};
 use crate::schema::reviews::dsl::reviews;
-use crate::schema::reviews::username;
+use crate::schema::reviews::{reviewee, username};
 
 #[derive(serde::Deserialize, serde::Serialize)]
 struct Reviews {
@@ -33,7 +33,7 @@ pub async fn read(
 }
 
 #[actix_web::post("/review")]
-pub async fn create(
+pub async fn upsert(
     pool: actix_web::web::Data<DbPool>,
     form: actix_web::web::Json<NewReviewJ>,
     credentials: actix_web_httpauth::extractors::bearer::BearerAuth,
@@ -46,10 +46,11 @@ pub async fn create(
         let mut inner = form.into_inner();
         inner.username = Some(username_s.to_string());
         let new_review_vals = NewReview::from(&inner);
-        log::info!("creating review: {new_review_vals:#?}");
         let review = diesel::insert_into(reviews)
             .values(&new_review_vals)
-            // .on_conflict((reviewee, username))
+            .on_conflict((reviewee, username))
+            .do_update()
+            .set(&new_review_vals)
             .returning(Review::as_returning())
             .get_result(&mut conn)?;
         return Ok(actix_web::web::Json(review));

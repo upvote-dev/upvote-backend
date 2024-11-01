@@ -4,35 +4,7 @@ upvote-backend
 
 Backend implementation handling models and routes for `Review`s, `Profile`s, and more.
 
-Server frontend can be found at parent repository: https://github.com/SamuelMarks/rust-actix-diesel-auth-scaffold (clone this one directory above to build)
-
-## Why
-
-Honestly everything else is too complicated. When you just want some access tokens and to get started real quick, this is what you need.
-
-Once the server is up—setup/usage notes follow—you can just:
-```sh
-$ curl -X POST http://localhost:3000/api/token \
-       -H 'Content-Type: application/json' \
-       -H 'Accept: application/json' \
-       -d '{"grant_type": "password", "username": "user", "password": "pass"}'
-```
-
-Which—registering user if nonexistent—returns of the form:
-```json
-{
-    "access_token": "user::regular::access_token::4151d642-eb27-4064-b87c-e3d2bfa10435",
-    "token_type": "Bearer",
-    "expires_in": 3600
-}
-```
-
-Then you can use this the regular way, for example:
-
-```sh
-$ curl http://localhost:3000/secured/secret \
-       -H 'Authorization: Bearer user::regular::access_token::4151d642-eb27-4064-b87c-e3d2bfa10435'
-```
+Server frontend can be found at parent repository: https://github.com/upvote-dev/serve-upvote (clone this one directory above for that to build)
 
 ## Docker usage
 
@@ -69,22 +41,9 @@ Add an `.env` file or otherwise add these environment variables; replacing conne
     DATABASE_URL=postgres://rest_user:rest_pass@localhost/rest_db
     REDIS_URL=redis://127.0.0.1/
 
-### Execute
+### Test
 
-    cargo run
-
-#### `--help`
-
-    Usage: serve-actix-diesel-auth-scaffold [OPTIONS]
-    
-    Options:
-          --hostname <HOSTNAME>  Hostname [env: SADAS_HOSTNAME=] [default: localhost]
-      -p, --port <PORT>          Port [env: SADAS_PORT=] [default: 3000]
-          --no-host-env          Avoid inheriting host environment variables
-          --env-file <ENV_FILE>  Env file, defaults to ".env"
-      -e, --env <ENV>            Env var (can be specified multiple times, like `-eFOO=5 -eBAR=can`)
-      -h, --help                 Print help
-      -V, --version              Print version
+    cargo test
 
 ## Contribution guide
 Ensure all tests are passing [`cargo test`](https://doc.rust-lang.org/cargo/commands/cargo-test.html) and [`rustfmt`](https://github.com/rust-lang/rustfmt) has been run. This can be with [`cargo make`](https://github.com/sagiegurari/cargo-make); installable with:

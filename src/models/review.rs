@@ -12,6 +12,7 @@
 pub struct Review {
     pub id: i32,
     pub reviewee: String,
+    pub reviewee_kind: String,
     pub username: String,
     pub vote: i16,
     pub message: Option<String>,
@@ -25,6 +26,7 @@ pub struct Review {
 pub struct NewReview<'a> {
     pub username: &'a str,
     pub reviewee: &'a str,
+    pub reviewee_kind: &'a str,
     pub vote: i16,
     pub message: Option<&'a str>,
     pub photo_url: Option<&'a str>,
@@ -35,6 +37,7 @@ pub struct NewReview<'a> {
 pub struct NewReviewJ {
     pub username: Option<String>,
     pub reviewee: String,
+    pub reviewee_kind: String,
     pub vote: i16,
     pub message: Option<String>,
     pub photo_url: Option<String>,
@@ -46,6 +49,7 @@ impl<'a> From<&'a NewReviewJ> for NewReview<'a> {
         Self {
             username: value.username.clone().unwrap().leak(), // this is guaranteed to succeed
             reviewee: &value.reviewee,
+            reviewee_kind: &value.reviewee_kind,
             vote: value.vote,
             message: match &value.message {
                 Some(s) => Some(s.as_str()),

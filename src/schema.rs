@@ -28,6 +28,7 @@ diesel::table! {
     reviews (id) {
         id -> Int4,
         reviewee -> Text,
+        reviewee_kind -> Text,
         #[max_length = 50]
         username -> Varchar,
         vote -> Int2,

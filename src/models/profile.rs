@@ -18,6 +18,8 @@ pub struct Profile {
     pub created_at: std::time::SystemTime,
 }
 
+pub const DEFAULT_RANK: &'static str = "paladin";
+
 #[derive(diesel::prelude::Insertable, diesel::AsChangeset, Debug)]
 #[diesel(table_name = crate::schema::profiles)]
 pub struct NewProfile<'a> {
@@ -28,21 +30,38 @@ pub struct NewProfile<'a> {
     pub profile_image_url: Option<&'a str>,
 }
 
+const DEFAULT_USERNAME: fn() -> String = || String::from("DEFAULT_USERNAME");
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct NewProfileJ {
-    pub alias: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub alias: Option<String>,
+
+    // this default gets overridden anyway
+    #[serde(default = "DEFAULT_USERNAME")]
     pub username: String,
-    pub rank: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rank: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub coins: Option<i32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub profile_image_url: Option<String>,
 }
 
 impl<'a> From<&'a NewProfileJ> for NewProfile<'a> {
     fn from(value: &'a NewProfileJ) -> Self {
         Self {
-            alias: &value.alias,
+            alias: match &value.alias {
+                Some(alias) => alias,
+                None => &value.username,
+            },
             username: &value.username,
-            rank: &value.rank,
+            rank: match &value.rank {
+                Some(rank) => rank,
+                None => DEFAULT_RANK,
+            },
             coins: match &value.coins {
                 Some(c) => Some(c.to_owned()),
                 None => Some(0),
