@@ -1,14 +1,21 @@
-use diesel::{QueryDsl, RunQueryDsl, SelectableHelper};
+use diesel::{BoolExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper};
+use diesel::dsl::avg;
 use rust_actix_diesel_auth_scaffold::errors::AuthError;
 use rust_actix_diesel_auth_scaffold::DbPool;
 
 use crate::models::review::{NewReview, NewReviewJ, Review};
 use crate::schema::reviews::dsl::reviews;
-use crate::schema::reviews::{reviewee, username};
+use crate::schema::reviews::{reviewee, reviewee_kind, username, vote};
 
 #[derive(serde::Deserialize, serde::Serialize)]
 struct Reviews {
     reviews: Vec<Review>,
+}
+
+#[derive(serde::Deserialize, serde::Serialize)]
+struct ReviewsAgg {
+    reviews: Vec<Review>,
+    aggregate_rating: u8,
 }
 
 #[actix_web::get("/review")]
@@ -30,6 +37,60 @@ pub async fn read(
         }));
     }
     Err(AuthError::NotFound("User does not have associated review"))
+}
+
+#[derive(serde::Deserialize)]
+struct ReviewsQuery {
+    reviewee_kind: String,
+    reviewee: Option<String>,
+}
+
+impl Default for ReviewsQuery {
+    fn default() -> Self {
+        Self {
+            reviewee_kind: String::from("product"),
+            reviewee: None,
+        }
+    }
+}
+
+#[actix_web::get("/reviews")]
+pub async fn read_many(
+    pool: actix_web::web::Data<DbPool>,
+    query: actix_web::web::Query<ReviewsQuery>,
+) -> Result<actix_web::web::Json<ReviewsAgg>, AuthError> {
+    let mut conn = pool.get()?;
+
+    use diesel::ExpressionMethods;
+
+    let reviews_vec: Vec<Review> = match &query.reviewee {
+            None => reviews.filter(reviewee_kind.eq(&query.reviewee_kind)).get_results::<Review>(&mut conn)?,
+            Some(reviewee_s) => reviews
+                .filter(
+                    reviewee_kind.eq(&query.reviewee_kind)
+                        .and(reviewee.eq(reviewee_s))
+                ).get_results::<Review>(&mut conn)?
+    };
+    // TODO: Get this working as one query, like:
+    // SELECT *, AVG(rating) FROM reviews WHERE reviewee_kind=% AND reviewee=%
+    /*let aggregate_rating = match &query.reviewee {
+        None => reviews
+            .select(avg(vote))
+            .filter(reviewee_kind.eq(&query.reviewee_kind))
+            .get_results(&mut conn)?,
+        Some(reviewee_s) => reviews
+            .select(avg(vote))
+            .filter(
+                reviewee_kind.eq(&query.reviewee_kind)
+                    .and(reviewee.eq(reviewee_s))
+            )
+            .get_results(&mut conn)?
+    };*/
+
+    Ok(actix_web::web::Json(ReviewsAgg {
+        reviews: reviews_vec,
+        aggregate_rating: 0,
+    }))
 }
 
 #[actix_web::post("/review")]
