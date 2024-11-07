@@ -1558,7 +1558,7 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 [[package]]
 name = "rust-actix-diesel-auth-scaffold"
 version = "0.0.1"
-source = "git+https://github.com/offscale/rust-actix-diesel-auth-scaffold#9d98537a63206edd851675db33cbdac18c5e1319"
+source = "git+https://github.com/offscale/rust-actix-diesel-auth-scaffold#81530ab8646d9712e9fa00ddb36f576466f21ebf"
 dependencies = [
  "actix-web",
  "actix-web-httpauth",
@@ -1939,6 +1939,7 @@ dependencies = [
  "derive_more 1.0.0",
  "diesel",
  "diesel_migrations",
+ "lazy_static",
  "log",
  "rust-actix-diesel-auth-scaffold",
  "serde",

@@ -1,11 +1,11 @@
 use diesel::{BoolExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper};
-use diesel::dsl::avg;
+
 use rust_actix_diesel_auth_scaffold::errors::AuthError;
 use rust_actix_diesel_auth_scaffold::DbPool;
 
 use crate::models::review::{NewReview, NewReviewJ, Review};
 use crate::schema::reviews::dsl::reviews;
-use crate::schema::reviews::{reviewee, reviewee_kind, username, vote};
+use crate::schema::reviews::{reviewee, reviewee_kind, username};
 
 #[derive(serde::Deserialize, serde::Serialize)]
 struct Reviews {
@@ -64,12 +64,16 @@ pub async fn read_many(
     use diesel::ExpressionMethods;
 
     let reviews_vec: Vec<Review> = match &query.reviewee {
-            None => reviews.filter(reviewee_kind.eq(&query.reviewee_kind)).get_results::<Review>(&mut conn)?,
-            Some(reviewee_s) => reviews
-                .filter(
-                    reviewee_kind.eq(&query.reviewee_kind)
-                        .and(reviewee.eq(reviewee_s))
-                ).get_results::<Review>(&mut conn)?
+        None => reviews
+            .filter(reviewee_kind.eq(&query.reviewee_kind))
+            .get_results::<Review>(&mut conn)?,
+        Some(reviewee_s) => reviews
+            .filter(
+                reviewee_kind
+                    .eq(&query.reviewee_kind)
+                    .and(reviewee.eq(reviewee_s)),
+            )
+            .get_results::<Review>(&mut conn)?,
     };
     // TODO: Get this working as one query, like:
     // SELECT *, AVG(rating) FROM reviews WHERE reviewee_kind=% AND reviewee=%
