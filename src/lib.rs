@@ -6,6 +6,9 @@ pub mod routes;
 
 pub mod schema;
 
+#[cfg(test)]
+mod tests;
+
 pub const CARGO_PKG_VERSION: &'static str = env!("CARGO_PKG_VERSION");
 pub const CARGO_PKG_NAME: &'static str = env!("CARGO_PKG_NAME");
 

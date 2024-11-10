@@ -1558,7 +1558,7 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 [[package]]
 name = "rust-actix-diesel-auth-scaffold"
 version = "0.0.1"
-source = "git+https://github.com/offscale/rust-actix-diesel-auth-scaffold#81530ab8646d9712e9fa00ddb36f576466f21ebf"
+source = "git+https://github.com/offscale/rust-actix-diesel-auth-scaffold#cec40e04f0da499d79c8b76d76f114c8422d3270"
 dependencies = [
  "actix-web",
  "actix-web-httpauth",
@@ -1933,6 +1933,7 @@ checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
 name = "upvote-backend"
 version = "0.0.1"
 dependencies = [
+ "actix-http",
  "actix-web",
  "actix-web-httpauth",
  "chrono",
