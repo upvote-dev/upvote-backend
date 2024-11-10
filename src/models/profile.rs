@@ -18,6 +18,19 @@ pub struct Profile {
     pub created_at: std::time::SystemTime,
 }
 
+impl Default for Profile {
+    fn default() -> Self {
+        Self {
+            alias: String::new(),
+            username: String::new(),
+            rank: String::from(DEFAULT_RANK),
+            coins: 0,
+            profile_image_url: None,
+            created_at: std::time::SystemTime::now(),
+        }
+    }
+}
+
 pub const DEFAULT_RANK: &'static str = "paladin";
 
 #[derive(diesel::prelude::Insertable, diesel::AsChangeset, Debug)]
