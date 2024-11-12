@@ -18,25 +18,17 @@ struct ReviewsAgg {
     aggregate_rating: u8,
 }
 
-#[actix_web::get("/review")]
+#[actix_web::get("/review/{id}")]
 pub async fn read(
     pool: actix_web::web::Data<DbPool>,
-    credentials: actix_web_httpauth::extractors::bearer::BearerAuth,
-) -> Result<actix_web::web::Json<Reviews>, AuthError> {
+    path: actix_web::web::Path<String>,
+) -> Result<actix_web::web::Json<Review>, AuthError> {
     let mut conn = pool.get()?;
 
-    // 0. check token username vs username in request
-    if let Some((username_s, _)) = credentials.token().split_once(":") {
-        use diesel::ExpressionMethods;
-        let reviews_vec = reviews
-            .filter(username.eq(username_s))
-            .load::<Review>(&mut conn)?;
-
-        return Ok(actix_web::web::Json(Reviews {
-            reviews: reviews_vec,
-        }));
+    match path.into_inner().parse::<i32>() {
+        Ok(n) => Ok(actix_web::web::Json(reviews.find(n).first(&mut conn)?)),
+        Err(_) => Err(AuthError::NotFound("id does not parse")),
     }
-    Err(AuthError::NotFound("User does not have associated review"))
 }
 
 #[derive(serde::Deserialize)]

@@ -21,6 +21,22 @@ pub struct Review {
     pub created_at: std::time::SystemTime,
 }
 
+impl Default for Review {
+    fn default() -> Self {
+        Self {
+            id: 0,
+            username: String::new(),
+            reviewee: String::new(),
+            reviewee_kind: String::from("product"),
+            vote: 0,
+            message: None,
+            photo_url: None,
+            video_url: None,
+            created_at: std::time::SystemTime::now(),
+        }
+    }
+}
+
 #[derive(diesel::prelude::Insertable, diesel::AsChangeset, Debug)]
 #[diesel(table_name = crate::schema::reviews)]
 pub struct NewReview<'a> {
@@ -42,6 +58,20 @@ pub struct NewReviewJ {
     pub message: Option<String>,
     pub photo_url: Option<String>,
     pub video_url: Option<String>,
+}
+
+impl Default for NewReviewJ {
+    fn default() -> Self {
+        Self {
+            username: None,
+            reviewee: String::new(),
+            reviewee_kind: String::from("product"),
+            vote: 0,
+            message: None,
+            photo_url: None,
+            video_url: None,
+        }
+    }
 }
 
 impl<'a> From<&'a NewReviewJ> for NewReview<'a> {
