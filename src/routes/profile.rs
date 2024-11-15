@@ -1,3 +1,4 @@
+use actix_web::{get, post};
 use diesel::{QueryDsl, RunQueryDsl, SelectableHelper};
 
 use rust_actix_diesel_auth_scaffold::errors::AuthError;
@@ -7,7 +8,14 @@ use crate::models::profile::{NewProfile, NewProfileJ, Profile};
 use crate::schema::profiles::dsl::profiles;
 use crate::schema::profiles::{alias, username};
 
-#[actix_web::get("/profile")]
+/// Get profile
+#[utoipa::path(
+    responses(
+        (status = 200, description = "Profile for user associated with access token"),
+        (status = 404, description = "Not found: User does not have associated profile")
+    )
+)]
+#[get("/profile")]
 pub async fn read(
     pool: actix_web::web::Data<DbPool>,
     credentials: actix_web_httpauth::extractors::bearer::BearerAuth,
@@ -24,7 +32,14 @@ pub async fn read(
     Err(AuthError::NotFound("User does not have associated profile"))
 }
 
-#[actix_web::post("/profile")]
+/// Upsert Profile
+#[utoipa::path(
+    responses(
+        (status = 200, description = "Profile created"),
+        (status = 401, description = "Unauthorised: You tried to create a profile for another user")
+    )
+)]
+#[post("/profile")]
 pub async fn upsert(
     pool: actix_web::web::Data<DbPool>,
     form: actix_web::web::Json<NewProfileJ>,

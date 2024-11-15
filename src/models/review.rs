@@ -49,7 +49,7 @@ pub struct NewReview<'a> {
     pub video_url: Option<&'a str>,
 }
 
-#[derive(serde::Deserialize, serde::Serialize)]
+#[derive(serde::Deserialize, serde::Serialize, utoipa::ToSchema)]
 pub struct NewReviewJ {
     pub username: Option<String>,
     pub reviewee: String,

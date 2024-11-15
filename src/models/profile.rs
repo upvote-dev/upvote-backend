@@ -44,7 +44,7 @@ pub struct NewProfile<'a> {
 }
 
 const DEFAULT_USERNAME: fn() -> String = || String::from("DEFAULT_USERNAME");
-#[derive(serde::Deserialize, serde::Serialize)]
+#[derive(serde::Deserialize, serde::Serialize, utoipa::ToSchema)]
 pub struct NewProfileJ {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub alias: Option<String>,

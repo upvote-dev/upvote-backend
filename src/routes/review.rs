@@ -1,3 +1,4 @@
+use actix_web::{get, post};
 use diesel::{BoolExpressionMethods, QueryDsl, RunQueryDsl, SelectableHelper};
 
 use rust_actix_diesel_auth_scaffold::errors::AuthError;
@@ -18,19 +19,6 @@ struct ReviewsAgg {
     aggregate_rating: u8,
 }
 
-#[actix_web::get("/review/{id}")]
-pub async fn read(
-    pool: actix_web::web::Data<DbPool>,
-    path: actix_web::web::Path<String>,
-) -> Result<actix_web::web::Json<Review>, AuthError> {
-    let mut conn = pool.get()?;
-
-    match path.into_inner().parse::<i32>() {
-        Ok(n) => Ok(actix_web::web::Json(reviews.find(n).first(&mut conn)?)),
-        Err(_) => Err(AuthError::NotFound("id does not parse")),
-    }
-}
-
 #[derive(serde::Deserialize)]
 struct ReviewsQuery {
     reviewee_kind: String,
@@ -46,7 +34,35 @@ impl Default for ReviewsQuery {
     }
 }
 
-#[actix_web::get("/reviews")]
+/// Get Review by id
+#[utoipa::path(
+    responses(
+        (status = 200, description = "Review found from database"),
+        (status = 404, description = "Not found")
+    ),
+    params(
+        ("id", description = "Review id"),
+    )
+)]
+#[get("/review/{id}")]
+pub async fn read(
+    pool: actix_web::web::Data<DbPool>,
+    id: actix_web::web::Path<i32>,
+) -> Result<actix_web::web::Json<Review>, AuthError> {
+    let mut conn = pool.get()?;
+    Ok(actix_web::web::Json(
+        reviews.find(id.into_inner()).first(&mut conn)?,
+    ))
+}
+
+/// Get Reviews
+#[utoipa::path(
+    responses(
+        (status = 200, description = "Reviews found in database"),
+        (status = 404, description = "Not found")
+    )
+)]
+#[get("/reviews")]
 pub async fn read_many(
     pool: actix_web::web::Data<DbPool>,
     query: actix_web::web::Query<ReviewsQuery>,
@@ -89,7 +105,14 @@ pub async fn read_many(
     }))
 }
 
-#[actix_web::post("/review")]
+/// Upsert Review
+#[utoipa::path(
+    responses(
+        (status = 200, description = "Review created"),
+        (status = 500, description = "Internal Server Error")
+    )
+)]
+#[post("/review")]
 pub async fn upsert(
     pool: actix_web::web::Data<DbPool>,
     form: actix_web::web::Json<NewReviewJ>,
