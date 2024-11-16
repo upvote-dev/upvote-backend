@@ -19,7 +19,7 @@ struct ReviewsAgg {
     aggregate_rating: u8,
 }
 
-#[derive(serde::Deserialize)]
+#[derive(serde::Deserialize, utoipa::ToSchema)]
 struct ReviewsQuery {
     reviewee_kind: String,
     reviewee: Option<String>,
