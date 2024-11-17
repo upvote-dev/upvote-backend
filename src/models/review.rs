@@ -49,14 +49,39 @@ pub struct NewReview<'a> {
     pub video_url: Option<&'a str>,
 }
 
+/// Create a new Review with this record
 #[derive(serde::Deserialize, serde::Serialize, utoipa::ToSchema)]
 pub struct NewReviewJ {
+    /// Optional username (regardless of whether set uses username from access token)
+    #[schema(example = rust_actix_diesel_auth_scaffold::option_default::<String>)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub username: Option<String>,
+
+    /// Unique identifier to object being reviewed
+    #[schema(example = "item0_barcode")]
     pub reviewee: String,
+
+    /// Type of object being reviewed
+    #[schema(example = "product")]
     pub reviewee_kind: String,
+
+    /// Appraisal (e.g., `-1` is downvote, `1` is upvote)
+    #[schema(example = 1i16)]
     pub vote: i16,
+
+    /// Optional free-text review
+    #[schema(example = rust_actix_diesel_auth_scaffold::option_default::<String>)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub message: Option<String>,
+
+    /// Optional image URL to photo of reviewee
+    #[schema(example = rust_actix_diesel_auth_scaffold::option_default::<String>)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub photo_url: Option<String>,
+
+    /// Optional video URL to video of reviewee
+    #[schema(example = rust_actix_diesel_auth_scaffold::option_default::<String>)]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub video_url: Option<String>,
 }
 

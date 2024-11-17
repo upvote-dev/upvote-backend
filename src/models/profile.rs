@@ -44,21 +44,33 @@ pub struct NewProfile<'a> {
 }
 
 const DEFAULT_USERNAME: fn() -> String = || String::from("DEFAULT_USERNAME");
+
+/// Create a new Profile with this record
 #[derive(serde::Deserialize, serde::Serialize, utoipa::ToSchema)]
 pub struct NewProfileJ {
+    /// Optional alias (if set, this is publicly used instead of username)
+    #[schema(example = rust_actix_diesel_auth_scaffold::option_default::<String>)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub alias: Option<String>,
 
+    /// Optional username (regardless of whether set uses username from access token)
+    #[schema(example = DEFAULT_USERNAME)]
     // this default gets overridden anyway
     #[serde(default = "DEFAULT_USERNAME")]
     pub username: String,
 
+    /// Optional rank (TBD rank ontology)
+    #[schema(example = rust_actix_diesel_auth_scaffold::option_default::<String>)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub rank: Option<String>,
 
+    /// Optional starting coin amount
+    #[schema(example = 0i32)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub coins: Option<i32>,
 
+    /// Optional image URL to avatar associated with this profile
+    #[schema(example = rust_actix_diesel_auth_scaffold::option_default::<String>)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub profile_image_url: Option<String>,
 }

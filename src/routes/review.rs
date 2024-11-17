@@ -110,7 +110,8 @@ pub async fn read_many(
     responses(
         (status = 200, description = "Review created"),
         (status = 500, description = "Internal Server Error")
-    )
+    ),
+    security(("password"=[]))
 )]
 #[post("/review")]
 pub async fn upsert(

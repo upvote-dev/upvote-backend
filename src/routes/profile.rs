@@ -13,7 +13,8 @@ use crate::schema::profiles::{alias, username};
     responses(
         (status = 200, description = "Profile for user associated with access token"),
         (status = 404, description = "Not found: User does not have associated profile")
-    )
+    ),
+    security(("password"=[]))
 )]
 #[get("/profile")]
 pub async fn read(
@@ -37,7 +38,8 @@ pub async fn read(
     responses(
         (status = 200, description = "Profile created"),
         (status = 401, description = "Unauthorised: You tried to create a profile for another user")
-    )
+    ),
+    security(("password"=[]))
 )]
 #[post("/profile")]
 pub async fn upsert(
