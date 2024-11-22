@@ -39,7 +39,7 @@ pub struct NewProfile<'a> {
     pub alias: &'a str,
     pub username: &'a str,
     pub rank: &'a str,
-    pub coins: Option<i32>,
+    pub coins: i32,
     pub profile_image_url: Option<&'a str>,
 }
 
@@ -59,16 +59,6 @@ pub struct NewProfileJ {
     #[serde(default = "DEFAULT_USERNAME")]
     pub username: String,
 
-    /// Optional rank (TBD rank ontology)
-    #[schema(example = rust_actix_diesel_auth_scaffold::option_default::<String>)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub rank: Option<String>,
-
-    /// Optional starting coin amount
-    #[schema(example = 0i32)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub coins: Option<i32>,
-
     /// Optional image URL to avatar associated with this profile
     #[schema(example = rust_actix_diesel_auth_scaffold::option_default::<String>)]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -83,14 +73,8 @@ impl<'a> From<&'a NewProfileJ> for NewProfile<'a> {
                 None => &value.username,
             },
             username: &value.username,
-            rank: match &value.rank {
-                Some(rank) => rank,
-                None => DEFAULT_RANK,
-            },
-            coins: match &value.coins {
-                Some(c) => Some(c.to_owned()),
-                None => Some(0),
-            },
+            rank: DEFAULT_RANK,
+            coins: 0,
             profile_image_url: match &value.profile_image_url {
                 Some(s) => Some(s.as_str()),
                 None => None,

@@ -56,8 +56,6 @@ pub(crate) mod test_profile_api {
             .set_json(crate::models::profile::NewProfileJ {
                 alias: Some(String::from(alias)),
                 username: String::from(username),
-                rank: None,
-                coins: None,
                 profile_image_url: None,
             })
             .to_request()
